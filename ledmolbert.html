@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHYMKENT LED — интерактивті LED мольберттер жүйесі</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <style>
+    /* ── БАЗАЛЫҚ ПАРАМЕТРЛЕР ЖӘНЕ ЖАРҚЫН ТҮСТЕР ПАЛИТРАСЫ ── */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --bg-base: #faf8f5;           
+      --bg-card: #ffffff;           
+      --bg-viewport: #f4f0ea;       
+      --border-color: #e5dec9;      
+      --text-main: #12213d;         
+      --text-muted: #62728d;        
+      
+      --accent-cobalt: #0052ff;     
+      --accent-coral-gold: #ff5a36; 
+      --accent-mint: #00d694;       
+      --accent-luxury-gold: #c5a880;
+      
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --transition-bezier: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-fast: all 0.25s ease-out;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      position: relative;
+      width: 100%;
+    }
+
+    body:not(.lang-kk) [lang="kk"] { display: none !important; }
+    body.lang-kk [lang="ru"] { display: none !important; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-cobalt); border-radius: 4px; }
+
+    /* ── КАЗАХСКИЙ ОРНАМЕНТ - ФОНОВЫЙ ДЕКОР ── */
+    .ornament-divider {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      opacity: 0.8;
+      color: var(--accent-luxury-gold);
+    }
+    .ornament-divider svg {
+      width: 100%;
+      max-width: 120px;
+      height: auto;
+    }
+
+    /* ── СТИЛЬДІ ЖОҒАРҒЫ ШАПКА (HEADER) ── */
+    header.sticky-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(250, 248, 245, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 1000;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      gap: 14px;
+    }
+    
+    .logo-container-circle {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      padding: 2px;
+      border: 2px solid var(--accent-luxury-gold);
+      background: #ffffff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(18, 33, 61, 0.05);
+      flex-shrink: 0;
+    }
+    .logo-img-asset {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .topbar-pagination-details {
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-display);
+    }
+    .meta-studio-tag {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--accent-coral-gold);
+      text-transform: uppercase;
+    }
+    .meta-edition-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      margin-top: 1px;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .lang-switcher {
+      display: flex;
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      padding: 3px;
+      background: #ffffff;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .lang-item {
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 20px;
+      transition: var(--transition-fast);
+      color: var(--text-muted);
+    }
+    .lang-item.active {
+      background: var(--text-main);
+      color: #ffffff;
+    }
+    .btn-action-cta {
+      background: var(--text-main);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 30px;
+      transition: var(--transition-fast);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+    .btn-action-cta:hover {
+      background: var(--accent-cobalt);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 82, 255, 0.15);
+    }
+
+    /* ── СОВЕРШЕННО НОВЫЙ ИНФОРМАТИВНЫЙ ХЕРО СЕКЦИЯ (GRID) ── */
+    .hero-container-grid {
+      min-height: 90vh;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      padding: 130px 5% 60px;
+      position: relative;
+      z-index: 20;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-content-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero-counter {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-luxury-gold);
+      margin-bottom: 16px;
+      font-family: var(--font-display);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-counter::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent-luxury-gold);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .hero-title-massive {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(32px, 4.5vw, 60px);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin-bottom: 24px;
+    }
+    .hero-title-massive span.hollow-txt {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--accent-cobalt);
+    }
+    
+    .hero-explain-badge-strip {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .explain-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 6px 12px;
+      background: rgba(197, 168, 128, 0.12);
+      border: 1px solid var(--accent-luxury-gold);
+      color: var(--text-main);
+      border-radius: 20px;
+    }
+    .hero-desc-para {
+      font-size: clamp(15px, 1.8vw, 17px);
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 620px;
+      margin-bottom: 36px;
+    }
+    .hero-cta-line {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-cta-line .btn-action-cta {
+      background: var(--accent-cobalt);
+      padding: 14px 28px;
+      font-size: 13px;
+    }
+    .hero-cta-line .btn-action-cta:hover {
+      background: var(--text-main);
+    }
+
+    /* Правая демонстрационная часть первого экрана */
+    .hero-visual-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      width: 100%;
+    }
+    .product-hero-blueprint-container {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      height: 480px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 12px 12px 20px;
+      box-shadow: 0 30px 70px rgba(18, 33, 61, 0.1), 0 0 0 1px rgba(18, 33, 61, 0.02);
+    }
+    .floating-info-tag {
+      position: absolute;
+      background: var(--text-main);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: bold;
+      z-index: 30;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+      font-family: var(--font-display);
+      white-space: nowrap;
+    }
+    .tag-left-top { top: 30px; left: -20px; background: var(--accent-coral-gold); }
+    .tag-right-bottom { bottom: 40px; right: -20px; background: var(--accent-cobalt); }
+
+    /* ── ЖҮГІРТПЕ ЖОЛ ── */
+    .ticker-tape-wrap {
+      background: var(--text-main);
+      color: #ffffff;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 16px 0;
+      font-family: var(--font-display);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .ticker-inner {
+      display: inline-block;
+      animation: tickerRun 28s linear infinite;
+    }
+    @keyframes tickerRun {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+
+    /* ── СЕКЦИЯ КАРТЫ С КАРКАСОМ МОЛЬБЕРТА (U24 STYLE) ── */
+    .u24-map-infrastructure-section {
+      padding: 100px 5%;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .map-section-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 50px;
+      align-items: center;
+    }
+    
+    .u24-map-container-wrapper {
+      background: #0b111e;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 20px 40px rgba(18, 33, 61, 0.02);
+    }
+    .map-header-telemetry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 500;
+      margin-bottom: 12px;
+      background: rgba(11, 17, 30, 0.8);
+      padding: 10px 14px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 10px;
+    }
+    .telemetry-title {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+    }
+    .telemetry-gps {
+      font-family: var(--font-display);
+      font-size: 11px;
+      color: var(--accent-coral-gold);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .map-live-core-zone-leaflet {
+      width: 100%;
+      height: 340px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+    }
+
+    .u24-custom-ping {
+      position: relative;
+    }
+    .u24-custom-ping::before {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: rgba(0, 214, 148, 0.35);
+      border-radius: 50%;
+      top: -15px;
+      left: -15px;
+      animation: mapPulse 1.8s infinite ease-in-out;
+    }
+    .u24-custom-ping::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--accent-mint);
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      top: -5px;
+      left: -5px;
+    }
+    @keyframes mapPulse {
+      0% { transform: scale(0.4); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .map-footer-stats-strip {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 16px;
+      margin-top: 12px;
+      position: relative;
+      z-index: 500;
+      background: rgba(11, 17, 30, 0.8);
+      padding: 12px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .stat-micro-node {
+      flex: 1;
+      min-width: 100px;
+    }
+    .stat-micro-node h5 {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 3px;
+    }
+    .stat-micro-node p {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .malbert-specs-editorial-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .specs-badge-title {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-coral-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+    .specs-main-headline {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3.5vw, 40px);
+      text-transform: uppercase;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 24px;
+    }
+    .dimensions-blueprint-card {
+      background: var(--bg-base);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .blueprint-metric-item {
+      border-left: 3px solid var(--accent-cobalt);
+      padding-left: 14px;
+    }
+    .blueprint-metric-item.height-node {
+      border-left-color: var(--accent-luxury-gold);
+    }
+    .metric-value-display {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .metric-label-display {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    /* ── ИНТЕРФЕЙСТІК ИНТЕРАКТИВТІ ПАНЕЛЬ СЕКЦИЯСЫ ── */
+    .transformation-engine-section {
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+      z-index: 20;
+      background: #ffffff;
+    }
+    .transformation-matrix {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      min-height: 700px;
+    }
+
+    .matrix-sidebar-controls {
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+    }
+    .matrix-cell-tab {
+      padding: 30px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      background: transparent;
+      transition: var(--transition-bezier);
+      position: relative;
+      text-align: left;
+      gap: 16px;
+    }
+    .matrix-cell-tab.active {
+      background: var(--bg-base);
+      border-left: 5px solid var(--accent-cobalt);
+    }
+    
+    .tab-index-glyph {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--border-color);
+      transition: var(--transition-bezier);
+    }
+    .matrix-cell-tab:hover .tab-index-glyph, .matrix-cell-tab.active .tab-index-glyph {
+      color: var(--accent-cobalt);
+    }
+    .tab-meta-details h3 {
+      font-family: var(--font-display);
+      font-size: clamp(16px, 2vw, 19px);
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+      color: var(--text-main);
+      transition: var(--transition-bezier);
+    }
+    .matrix-cell-tab:hover .tab-meta-details h3, .matrix-cell-tab.active .tab-meta-details h3 {
+      color: var(--accent-cobalt);
+    }
+    .tab-meta-details p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .matrix-view-viewport {
+      background: var(--bg-viewport);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+    .transformation-stage-card {
+      position: absolute;
+      inset: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(15px);
+      transition: all 0.5s ease-out;
+    }
+    .transformation-stage-card.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .viewport-canvas-hardware {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      height: 440px;
+      background: #ffffff;
+      margin: 0 auto;
+      border-radius: 14px;
+      padding: 10px 10px 14px;
+      box-shadow: 0 25px 50px rgba(18, 33, 61, 0.06), 0 0 0 1px rgba(18, 33, 61, 0.03);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.1, 1, 0.3, 1);
+    }
+    .hardware-screen-core {
+      width: 100%;
+      height: 100%;
+      background: #e5dec9;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hardware-screen-core video, .hardware-screen-core img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hardware-stand-element {
+      position: absolute;
+      bottom: -12px;
+      left: 12%;
+      width: 76%;
+      height: 12px;
+      background: #d8cfb3;
+      border-radius: 2px;
+      z-index: -1;
+    }
+
+    .hardware-dimension-tag {
+      position: absolute;
+      background: var(--text-main);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 4px 6px;
+      border-radius: 4px;
+      z-index: 10;
+      letter-spacing: 0.05em;
+    }
+    .dim-height {
+      top: 50%;
+      right: -38px;
+      transform: translateY(-50%) rotate(90deg);
+      background: var(--accent-luxury-gold);
+    }
+    .dim-screen {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-cobalt);
+    }
+
+    .transformed-editorial-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-top: 1px solid var(--border-color);
+      padding-top: 16px;
+      margin-top: 16px;
+      gap: 20px;
+    }
+    .editorial-headline-text {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 2.5vw, 24px);
+      text-transform: uppercase;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+    .editorial-sub-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 380px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* ── СИПАТТАМА ЖӘНЕ ТЕХНИКАЛЫҚ БЛОК СЕКЦИЯСЫ ── */
+    .chronicle-section {
+      padding: 100px 5%;
+      position: relative;
+      z-index: 20;
+      background: var(--bg-base);
+    }
+    .section-eyebrow-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 44px;
+      border-bottom: 2px solid var(--text-main);
+      padding-bottom: 16px;
+      gap: 16px;
+    }
+    .section-serial-num {
+      font-family: var(--font-display);
+      font-size: 12px;
+      color: var(--accent-coral-gold);
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    .section-main-heading {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 4vw, 44px);
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+    .chronicle-layout-matrix {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr 0.9fr;
+      gap: 20px;
+    }
+    .chronicle-card-block {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 36px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 360px;
+      transition: var(--transition-bezier);
+    }
+    .chronicle-card-block:hover {
+      border-color: var(--accent-cobalt);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(18, 33, 61, 0.04);
+    }
+    .chronicle-large-symbol {
+      font-family: var(--font-display);
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--accent-cobalt);
+      margin-bottom: 20px;
+    }
+    .chronicle-card-block:nth-child(2) .chronicle-large-symbol { color: var(--accent-coral-gold); }
+    .chronicle-card-block:nth-child(3) .chronicle-large-symbol { color: var(--accent-mint); }
+    
+    .chronicle-card-title {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 2.2vw, 22px);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+    .chronicle-card-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* ── ТАПСЫРЫС БЕРУ ЖӘНЕ КЕРІ БАЙЛАНЫС ФОРМАСЫ ── */
+    .booking-system-wrapper {
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 100px 5%;
+      position: relative;
+      z-index: 20;
+    }
+    .booking-split-panel {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    .booking-meta-editorial h2 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4.5vw, 48px);
+      text-transform: uppercase;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .contact-card-anchor {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-base);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      margin-top: 32px;
+      transition: var(--transition-bezier);
+    }
+    .contact-card-anchor:hover {
+      border-color: var(--accent-cobalt);
+      background: #ffffff;
+      box-shadow: 0 12px 24px rgba(0, 82, 255, 0.06);
+    }
+    .contact-avatar-icon {
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-cobalt);
+      flex-shrink: 0;
+    }
+
+    .form-brutalist-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 44px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(18, 33, 61, 0.02);
+    }
+    .field-row-wrapper {
+      margin-bottom: 24px;
+    }
+    .field-row-double {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .brutalist-input-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .brutalist-input-control {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 0;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-main);
+      outline: none;
+      transition: var(--transition-fast);
+      border-radius: 0;
+    }
+    .brutalist-input-control:focus {
+      border-bottom-color: var(--accent-cobalt);
+    }
+    select.brutalist-input-control {
+      background-color: #ffffff;
+    }
+    .btn-brutalist-submit {
+      width: 100%;
+      background: var(--accent-cobalt);
+      color: #ffffff;
+      border: none;
+      padding: 16px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 30px;
+      transition: var(--transition-bezier);
+      margin-top: 12px;
+    }
+    .btn-brutalist-submit:hover {
+      background: var(--text-main);
+      box-shadow: 0 8px 20px rgba(18, 33, 61, 0.1);
+    }
+
+    /* ── СЕРВИСТІК ТӨМЕНГІ БӨЛІМ (FOOTER) ── */
+    footer.editorial-footer {
+      padding: 40px 5%;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-base);
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-links-wrap {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links-wrap a {
+      color: var(--accent-cobalt);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer-links-wrap a:hover {
+      color: var(--text-main);
+    }
+
+    /* ── БЕЙІМДЕЛГЕН МОБИЛЬДІ НҰСҚА ЖӘНЕ ПЛАНШЕТТЕР ── */
+    @media (max-width: 1024px) {
+      header.sticky-nav { height: 80px; }
+      .hero-container-grid { grid-template-columns: 1fr; padding-top: 120px; gap: 50px; }
+      .hero-visual-right { order: -1; } 
+      .map-section-grid { grid-template-columns: 1fr; gap: 40px; }
+      .u24-map-container-wrapper { height: 460px; }
+      .map-live-core-zone-leaflet { height: 280px; }
+      .transformation-matrix { grid-template-columns: 1fr; }
+      .matrix-sidebar-controls { border-right: none; }
+      .matrix-view-viewport { min-height: 520px; padding: 24px; }
+      .transformation-stage-card { inset: 24px; }
+      .chronicle-layout-matrix { grid-template-columns: 1fr; gap: 16px; }
+      .chronicle-card-block { min-height: auto; }
+      .booking-split-panel { grid-template-columns: 1fr; gap: 48px; }
+    }
+
+    @media (max-width: 600px) {
+      header.sticky-nav { height: 75px; padding: 0 4%; }
+      .brand-group { gap: 10px; }
+      .logo-container-circle { width: 42px; height: 42px; }
+      .meta-edition-tag { font-size: 11px; }
+      .btn-action-cta { padding: 8px 14px; font-size: 11px; }
+      .lang-item { padding: 5px 10px; font-size: 10px; }
+      
+      .hero-container-grid { padding: 105px 4% 40px; gap: 32px; }
+      .hero-title-massive { margin-bottom: 16px; }
+      .hero-desc-para { margin-bottom: 24px; }
+      
+      .product-hero-blueprint-container { max-width: 270px; height: 400px; }
+      .tag-left-top { left: -10px; top: 20px; }
+      .tag-right-bottom { right: -10px; bottom: 30px; }
+      .dim-height { right: -34px; }
+      
+      .u24-map-infrastructure-section, .chronicle-section, .booking-system-wrapper { padding: 60px 4%; }
+      .u24-map-container-wrapper { padding: 16px; height: 420px; }
+      .map-live-core-zone-leaflet { height: 250px; }
+      .map-footer-stats-strip { padding: 10px; }
+      
+      .dimensions-blueprint-card { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
+      .matrix-cell-tab { padding: 20px 16px; }
+      .matrix-view-viewport { padding: 16px; min-height: 480px; }
+      .transformation-stage-card { inset: 16px; }
+      .viewport-canvas-hardware { max-width: 240px; height: 350px; }
+      .dim-height { right: -34px; }
+      .transformed-editorial-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .editorial-sub-text { text-align: left; }
+      
+      .form-brutalist-card { padding: 24px; }
+      .field-row-double { grid-template-columns: 1fr; gap: 24px; }
+      
+      footer.editorial-footer { flex-direction: column; text-align: center; padding: 30px 4%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="sticky-nav">
+    <a href="#" class="brand-group">
+      <div class="logo-container-circle">
+        <img src="logo.png" alt="SHYMKENT LED Official Logo" class="logo-img-asset">
+      </div>
+      <div class="topbar-pagination-details">
+        <span class="meta-studio-tag">LED MALBERT SHYMKENT</span>
+        <span class="meta-edition-tag">
+          <span lang="ru">тренды 2026</span>
+          <span lang="kk">2026 тойдың сәндері</span>
+        </span>
+      </div>
+    </a>
+    <div class="action-group">
+      <div class="lang-switcher" onclick="switchSystemLanguage()">
+        <span class="lang-item active" id="lng-ru">RU</span>
+        <span class="lang-item" id="lng-kk">KK</span>
+      </div>
+      <a href="#book-now" class="btn-action-cta">
+        <span lang="ru">Забронировать</span><span lang="kk">Тапсырыс беру</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    
+    <section class="hero-container-grid">
+      <div class="hero-content-left">
+        <span class="hero-counter">
+          <span lang="ru">Премиум система дисплеев 2026</span>
+          <span lang="kk">Той дисплейлер жүйесі 2026</span>
+        </span>
+        
+        <h1 class="hero-title-massive">
+          <span lang="ru">Трансформация<br><span class="hollow-txt">воспоминаний</span><br>на ваших ивентах</span>
+          <span lang="kk">Сіздің кешіңіздегі<br><span class="hollow-txt">естеліктер</span><br>трансформациясы</span>
+        </h1>
+
+        <div class="hero-explain-badge-strip">
+          <div class="explain-badge"><span lang="ru">Интерактивный LED экран</span><span lang="kk">Интерактивті LED экран</span></div>
+          <div class="explain-badge"><span lang="ru">Швейцарский дизайн</span><span lang="kk">Швейцариялық дизайн</span></div>
+          <div class="explain-badge"><span lang="ru">Для свадеб и банкетов</span><span lang="kk">Тойлар мен банкеттерге</span></div>
+        </div>
+        
+        <p class="hero-desc-para">
+          <span lang="ru"><b>Что это такое?</b> Это цифровое интерактивное полотно в изящном белоснежном корпусе мольберта. Вместо статичных бумажных рамок ваши гости видят живые медиа-открытки, динамические рассадки, видеоролики высокой четкости и теплые приветствия с калибровкой True Vivid.</span>
+          <span lang="kk"><b>Бұл не?</b> Бұл талғампаз ақ түсті мольберт корпусына орнатылған сандық интерактивті кенеп. Ескі қағаз жақтаулардың орнына сіздің қонақтарыңыз True Vivid калибрлеуі бар тірі медиа-ашықхаттарды, динамикалық қонақтар тізімін және жоғары сапалы бейнероликтерді көреді.</span>
+        </p>
+
+        <div class="hero-cta-line">
+          <a href="#explore-matrix" class="btn-action-cta">
+            <span lang="ru">Исследовать профили</span><span lang="kk">Профильдерді зерттеу</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual-right" id="hero-interactive-trigger-zone">
+        <div class="floating-info-tag tag-left-top">Ultra HD Screen</div>
+        <div class="floating-info-tag tag-right-bottom">180 cm ұзындығы</div>
+        
+        <div class="product-hero-blueprint-container" id="hero-hardware-canvas">
+          <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
+          <div class="hardware-dimension-tag dim-screen">Экран: 95×60 cm</div>
+          <div class="hardware-screen-core">
+            <video src="main.mp4" alt="Премиальный интерактивный LED мольберт SHYMKENT LED" controls>
+            </video>
+          </div>
+          <div class="hardware-stand-element"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ornament-divider">
+      <svg viewBox="0 0 100 30" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M10,15 Q25,2 40,15 T70,15 T100,15 M0,15 L10,15 M90,15 L100,15 M50,5 L50,25" />
+        <circle cx="50" cy="15" r="3" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <div class="ticker-tape-wrap">
+      <div class="ticker-inner">
+        ✦ SHYMKENT LED 2026 ✦ КӘСИБИ САНДЫҚ ДИСПЛЕЙЛЕР ЖҮЙЕСІ ✦ ЖАРҚЫН ТҮСТЕР ПАЛИТРАСЫ ✦ PROFESSIONAL DIGITAL ART PANELS SHYMKENT ✦ МІНСІЗ КАЛИБРЛЕУ ЖӘНЕ КЕПІЛДІК ✦ 
+      </div>
+    </div>
+
+    <section class="u24-map-infrastructure-section">
+      <div class="map-section-grid">
+        
+        <div class="u24-map-container-wrapper">
+          
+          <div class="map-header-telemetry">
+            <span class="telemetry-title"><span lang="ru">Интерактивный радар Шымкент</span><span lang="kk">Шымкент интерактивті радары</span></span>
+            <span class="telemetry-gps">42.3249° N, 69.5872° E</span>
+          </div>
+
+          <div id="u24-leaflet-map-engine" class="map-live-core-zone-leaflet"></div>
+
+          <div class="map-footer-stats-strip">
+            <div class="stat-micro-node">
+              <h5><span lang="ru">Статус системы</span><span lang="kk">Жүйе күйі</span></h5>
+              <p style="color: var(--accent-mint);">● Online / Активті</p>
+            </div>
+            <div class="stat-micro-node">
+              <h5><span lang="ru">Доставка</span><span lang="kk">Жеткізу</span></h5>
+              <p><span lang="ru">0-24 часа</span><span lang="kk">0-24 сағат</span></p>
+            </div>
+            <div class="stat-micro-node">
+              <h5><span lang="ru">Логистика</span><span lang="kk">Логистика</span></h5>
+              <p><span lang="ru">В черте города</span><span lang="kk">Қала ішінде</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="malbert-specs-editorial-box">
+          <span class="specs-badge-title">[ HARDWARE DIMENSIONS ]</span>
+          <h2 class="specs-main-headline">
+            <span lang="ru">Инженерное совершенство конструкции</span>
+            <span lang="kk">Конструкцияның инженерлік мінсіздігі</span>
+          </h2>
+          
+          <div class="dimensions-blueprint-card">
+            <div class="blueprint-metric-item height-node">
+              <div class="metric-value-display">180 cm</div>
+              <div class="metric-label-display">
+                <span lang="ru">Полная высота мольберта</span>
+                <span lang="kk">Мольберттің жалпы биіктігі</span>
+              </div>
+            </div>
+            <div class="blueprint-metric-item">
+              <div class="metric-value-display">95×60 cm</div>
+              <div class="metric-label-display">
+                <span lang="ru">Полезный размер LED экрана</span>
+                <span lang="kk">LED экранның нақты өлшемі</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="transformation-engine-section" id="explore-matrix">
+      <div class="transformation-matrix">
+        
+        <div class="matrix-sidebar-controls">
+          
+          <div class="matrix-cell-tab active" onclick="triggerTransformationState(0)">
+            <span class="tab-index-glyph">01</span>
+            <div class="tab-meta-details">
+              <h3><span lang="ru">Свадебный День</span><span lang="kk">Үйлену Той</span></h3>
+              <p><span lang="ru">Профиль 01 — Свадебная media-система</span><span lang="kk">Профиль 01 — Үйлену той медиа жүйесі</span></p>
+            </div>
+          </div>
+
+          <div class="matrix-cell-tab" onclick="triggerTransformationState(1)">
+            <span class="tab-index-glyph">02</span>
+            <div class="tab-meta-details">
+              <h3><span lang="ru">Қыз Ұзату</span><span lang="kk">Қыз Ұзату</span></h3>
+              <p><span lang="ru">Профиль 02 — Традиционные ритуалы</span><span lang="kk">Профиль 02 — Дәстүрлі ұзату медиасы</span></p>
+            </div>
+          </div>
+
+          <div class="matrix-cell-tab" onclick="triggerTransformationState(2)">
+            <span class="tab-index-glyph">03</span>
+            <div class="tab-meta-details">
+              <h3><span lang="ru">Тұсау Кесу</span><span lang="kk">Тұсау Кесу</span></h3>
+              <p><span lang="ru">Профиль 03 — Детские праздники</span><span lang="kk">Профиль 03 — Balaлар мерекесінің бейнесі</span></p>
+            </div>
+          </div>
+
+          <div class="matrix-cell-tab" onclick="triggerTransformationState(3)">
+            <span class="tab-index-glyph">04</span>
+            <div class="tab-meta-details">
+              <h3><span lang="ru">Премиум Банкет</span><span lang="kk">Премиум Банкет</span></h3>
+              <p><span lang="ru">Профиль 04 — Корпоративный стиль</span><span lang="kk">Профиль 04 — Корпоративтік кеш үлгісі</span></p>
+            </div>
+          </div>
+
+          <div class="matrix-cell-tab" onclick="triggerTransformationState(4)">
+            <span class="tab-index-glyph">05</span>
+            <div class="tab-meta-details">
+              <h3><span lang="ru">Элегантная Студия</span><span lang="kk">Элегантты Студия</span></h3>
+              <p><span lang="ru">Профиль 05 — Чистый белый корпус</span><span lang="kk">Профиль 05 — Таза ақ дизайн үлгісі</span></p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="matrix-view-viewport" id="viewport-interactive-zone">
+          
+          <div class="transformation-stage-card active">
+            <div class="viewport-canvas-hardware">
+              <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
+              <div class="hardware-dimension-tag dim-screen">Экран: 95×60 cm</div>
+              
+              <div class="hardware-screen-core">
+                <video src="wedding.MOV" autoplay loop muted playsinline></video>
+              </div>
+              <div class="hardware-stand-element"></div>
+            </div>
+            <div class="transformed-editorial-footer">
+              <span class="editorial-headline-text">Шыңғыс & Жұлдыз</span>
+              <p class="editorial-sub-text">
+                <span lang="ru">Интерактивные цифровые полотна встречают гостей на входе, погружая их в атмосферу романтики.</span>
+                <span lang="kk">Интерактивті сандық кенептер қонақтарды кіреберісте қарсы алып, романтикалық атмосфераға баурап алады.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="transformation-stage-card">
+            <div class="viewport-canvas-hardware">
+              <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
+              <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
+              <div class="hardware-screen-core">
+                <video src="kyzuzatu.MOV" autoplay loop muted playsinline></video>
+              </div>
+              <div class="hardware-stand-element"></div>
+            </div>
+            <div class="transformed-editorial-footer">
+              <span class="editorial-headline-text">Ұзату: Жания</span>
+              <p class="editorial-sub-text">
+                <span lang="ru">Портреты в national стиле на ярких экранах передают глубокую аутентичную эстетику образа.</span>
+                <span lang="kk">Жарқын экрандардағы ұлттық нақыштағы портреттер образдың терең ұлттық эстетикасын жеткізеді.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="transformation-stage-card">
+            <div class="viewport-canvas-hardware">
+              <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
+              <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
+              <div class="hardware-screen-core">
+                <video src="tusau.MOV" autoplay loop muted playsinline></video>
+              </div>
+              <div class="hardware-stand-element"></div>
+            </div>
+            <div class="transformed-editorial-footer">
+              <span class="editorial-headline-text">Тұсау Кесу</span>
+              <p class="editorial-sub-text">
+                <span lang="ru">Искренние детские эмоции и трогательные кадры фиксируют исторический шаг вашего ребенка.</span>
+                <span lang="kk">Шынайы балалар эмоциясы мен әсерлі кадрлар балаңыздың тарихи қадамын мәңгілікке қалдырады.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="transformation-stage-card">
+            <div class="viewport-canvas-hardware">
+              <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
+              <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
+              <div class="hardware-screen-core">
+                <video src="wedding2.MOV" autoplay loop muted playsinline></video>
+              </div>
+              <div class="hardware-stand-element"></div>
+            </div>
+            <div class="transformed-editorial-footer">
+              <span class="editorial-headline-text">Эстетика Света</span>
+              <p class="editorial-sub-text">
+                <span lang="ru">Динамическая смена контента на протяжении всего вечера: от приветствия до шоу программы.</span>
+                <span lang="kk">Кеш бойы мазмұнның динамикалық өзгеруі: қарсы алудан бастап шоу-бағдарламаға дейін.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="transformation-stage-card">
+            <div class="viewport-canvas-hardware">
+              <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
+              <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
+              <div class="hardware-screen-core">
+                <img src="sample1.jpeg" alt="Премиум Корпус">
+              </div>
+              <div class="hardware-stand-element"></div>
+            </div>
+            <div class="transformed-editorial-footer">
+              <span class="editorial-headline-text">Белоснежный Корпус</span>
+              <p class="editorial-sub-text">
+                <span lang="ru">Белоснежные минималистичные рамы идеально вписываются в любую флористику и декор залов.</span>
+                <span lang="kk">Ақ түсті минималистік жақтаулар кез келген флористика мен зал декорларына тамаша үйлеседі.</span>
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <div class="ornament-divider">
+      <svg viewBox="0 0 100 30" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M10,15 Q25,2 40,15 T70,15 T100,15 M0,15 L10,15 M90,15 L100,15 M50,5 L50,25" />
+        <circle cx="50" cy="15" r="3" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <section class="chronicle-section">
+      <div class="section-eyebrow-container">
+        <h2 class="section-main-heading"><span lang="ru">Технологический Стак</span><span lang="kk">Технологиялық Стек</span></h2>
+        <span class="section-serial-num">[ ТЕХНОЛОГИЯЛАР ЖҮЙЕСІ ]</span>
+      </div>
+
+      <div class="chronicle-layout-matrix">
+        
+        <div class="chronicle-card-block">
+          <span class="chronicle-large-symbol">⚡</span>
+          <div>
+            <h3 class="chronicle-card-title"><span lang="ru">Частота Обновления</span><span lang="kk">Экранның Жаңару Жиілігі</span></h3>
+            <p class="chronicle-card-text">
+              <span lang="ru">Высокая частота обновления абсолютно исключает появление мерцающих полос при съемке видео на любые современные смартфоны ваших гостей.</span>
+              <span lang="kk">Жоғары жиілік қонақтардың кез келген заманауи смартфондарына бейнежазба түсіру кезінде жыпылықтайтын жолақтардың пайда болуын толықтай жояды.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="chronicle-card-block">
+          <span class="chronicle-large-symbol">✦</span>
+          <div>
+            <h3 class="chronicle-card-title"><span lang="ru">True Vivid Экраны</span><span lang="kk">True Vivid Түстер</span></h3>
+            <p class="chronicle-card-text">
+              <span lang="ru">Идеальная заводская калибровка цветовой матрицы передает насыщенные оттенки, яркий баланс белого и естественные текстуры.</span>
+              <span lang="kk">Түс matrix-сының мінсіз калибрленуі қанық түстерді, ақ түстің нақты тепе-теңдігін және табигий құрылымды жеткізеді.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="chronicle-card-block">
+          <span class="chronicle-large-symbol">■</span>
+          <div>
+            <h3 class="chronicle-card-title"><span lang="ru">Дизайн Сервис</span><span lang="kk">Толық Дизайн Қызметі</span></h3>
+            <p class="chronicle-card-text">
+              <span lang="ru">Мы полностью берем на себя адаптацию, верстку, калибровку и профессиональный запуск медиафайлов под точные пропорции LED-полотен.</span>
+              <span lang="kk">Біз медиа файлдарды LED кенептеріміздің пропорцияларына sәykes бейімдеуді, калибрлеуді және кәсіби қосуды толықтай өз мойнымызға аламыз.</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="booking-system-wrapper" id="book-now">
+      <div class="booking-split-panel">
+        
+        <div class="booking-meta-editorial">
+          <h2><span lang="ru">Оставьте след в истории вашего праздника.</span><span lang="kk">Мерекеңіздің тарихында із қалдырыңыз.</span></h2>
+          <p class="chronicle-card-text">
+            <span lang="ru">Заполните интерактивную форму. Мы мгновенно рассчитаем доступность оборудования на выбранную дату в Шымкенте.</span>
+            <span lang="kk">Интерактивті форманы толтырыңыз. Біз Шымкенттегі таңдалған күнге жабдықтың қолжетімділігін жылдам есептейміз.</span>
+          </p>
+
+          <a href="https://wa.me/77716222706" class="contact-card-anchor" target="_blank">
+            <div class="contact-avatar-icon">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.89 9.886-.001 2.225.618 3.891 1.651 5.6l-.993 3.634 3.732-.979zm11.087-7.443c-.315-.158-1.86-.918-2.142-1.021-.283-.103-.488-.158-.693.158-.205.315-.79 1.021-.969 1.226-.179.205-.359.231-.674.074-.315-.158-1.33-.49-2.532-1.562-.936-.836-1.568-1.869-1.751-2.184-.184-.315-.02-.485.137-.642.142-.141.315-.368.473-.552.158-.184.21-.315.315-.526.105-.21.053-.394-.026-.552-.079-.158-.693-1.671-.949-2.289-.249-.602-.503-.519-.693-.529l-.591-.009c-.205 0-.538.077-.82.384-.282.308-1.077 1.053-1.077 2.564 0 1.511 1.097 2.972 1.25 3.181.153.21 2.154 3.29 5.218 4.612.729.314 1.299.502 1.743.643.732.233 1.398.2 1.925.122.587-.087 1.86-.761 2.122-1.458.262-.696.262-1.294.184-1.42-.079-.126-.282-.205-.597-.364z"/></svg>
+            </div>
+            <div>
+              <h4 style="font-size: 12px; font-weight: 700; text-transform: uppercase;"><span lang="ru">Чат в WhatsApp</span><span lang="kk">WhatsApp Чат</span></h4>
+              <p style="font-size: 15px; margin-top: 2px; color: var(--accent-cobalt); font-weight: bold;">8 (771) 622-27-06</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="form-brutalist-card">
+          <form onsubmit="dispatchWhatsAppMessage(event)">
+            
+            <div class="field-row-wrapper">
+              <label class="brutalist-input-label"><span lang="ru">Имя заказчика</span><span lang="kk">Тапсырыс берушінің аты</span></label>
+              <input type="text" id="inp-name" class="brutalist-input-control" required placeholder="..." style="color: var(--text-main);">
+            </div>
+
+            <div class="field-row-double field-row-wrapper">
+              <div>
+                <label class="brutalist-input-label"><span lang="ru">Дата проведения</span><span lang="kk">Өткізілетін күні</span></label>
+                <input type="date" id="inp-date" class="brutalist-input-control" required>
+              </div>
+              <div>
+                <label class="brutalist-input-label"><span lang="ru">Формат События</span><span lang="kk">Іс-шара форматы</span></label>
+                <select id="inp-format" class="brutalist-input-control">
+                  <option value="Свадьба / Үйлену тойы">Свадьба / Үйлену тойы</option>
+                  <option value="Қыз Ұзату">Қыз Ұзату</option>
+                  <option value="Тұсау Кесу">Тұсау Кесу</option>
+                  <option value="Юбилей / Корпоратив">Юбилей / Корпоратив</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-row-wrapper">
+              <label class="brutalist-input-label"><span lang="ru">Детали и пожелания</span><span lang="kk">Қосымша мәліметтер</span></label>
+              <input type="text" id="inp-details" class="brutalist-input-control" placeholder="...">
+            </div>
+
+            <button type="submit" class="btn-brutalist-submit">
+              <span lang="ru">Узнать цену</span><span lang="kk">Бағасын білу үшін</span>
+            </button>
+
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="editorial-footer">
+    <p>&copy; 2026 SHYMKENT LED. <span lang="ru">Все права защищены.</span><span lang="kk">Барлық құқықтар қорғалған.</span></p>
+    <div class="footer-links-wrap">
+      <a href="https://wa.me/77716222706" target="_blank">WhatsApp </a>
+      <a href="https://www.instagram.com/ledmolbert.shym/" target="_blank">Instagram</a>
+
+    </div>
+    
+  </footer>
+
+  <script>
+    let activeLangState = 'ru';
+
+    function switchSystemLanguage() {
+      activeLangState = activeLangState === 'ru' ? 'kk' : 'ru';
+      document.body.className = activeLangState === 'kk' ? 'lang-kk' : '';
+      
+      document.getElementById('lng-ru').classList.toggle('active', activeLangState === 'ru');
+      document.getElementById('lng-kk').classList.toggle('active', activeLangState === 'kk');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const shymkentCoords = [42.3249, 69.5872];
+      
+      const map = L.map('u24-leaflet-map-engine', {
+        center: shymkentCoords,
+        zoom: 12,
+        zoomControl: false,
+        attributionControl: false
+      });
+
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19
+      }).addTo(map);
+
+      const u24MarkerIcon = L.divIcon({
+        className: 'u24-custom-ping',
+        iconSize: [12, 12],
+        iconAnchor: [0, 0]
+      });
+
+      const locations = [
+        { coords: [42.3210, 69.5960], popup: "<b>Аль-Фараби ауданы</b><br>Активное покрытие" },
+        { coords: [42.3650, 69.6210], popup: "<b>Нурсат Сити</b><br>Медиа-мониторинг" },
+        { coords: [42.3420, 69.5890], popup: "<b>Проспект Кунаева</b><br>Центральный склад" }
+      ];
+
+      locations.forEach(loc => {
+        L.marker(loc.coords, { icon: u24MarkerIcon }).addTo(map).bindPopup(loc.popup);
+      });
+    });
+
+    function triggerTransformationState(index) {
+      const tabs = document.querySelectorAll('.matrix-cell-tab');
+      const cards = document.querySelectorAll('.transformation-stage-card');
+      
+      tabs.forEach((tab, i) => {
+        if(i === index) tab.classList.add('active');
+        else tab.classList.remove('active');
+      });
+
+      cards.forEach((card, i) => {
+        if(i === index) card.classList.add('active');
+        else card.classList.remove('active');
+      });
+    }
+
+    const heroTriggerZone = document.getElementById('hero-interactive-trigger-zone');
+    const heroCanvas = document.getElementById('hero-hardware-canvas');
+    if(heroTriggerZone && heroCanvas) {
+      heroTriggerZone.addEventListener('mousemove', (e) => {
+        const rect = heroTriggerZone.getBoundingClientRect();
+        const x = e.clientX - rect.left - (rect.width / 2);
+        const y = e.clientY - rect.top - (rect.height / 2);
+        const rotateX = -(y / rect.height) * 10;
+        const rotateY = (x / rect.width) * 10;
+        heroCanvas.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        heroCanvas.style.transition = "transform 0.1s ease-out";
+      });
+      heroTriggerZone.addEventListener('mouseleave', () => {
+        heroCanvas.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+        heroCanvas.style.transition = "transform 0.5s ease-out";
+      });
+    }
+
+    const viewPortZone = document.getElementById('viewport-interactive-zone');
+    viewPortZone.addEventListener('mousemove', (e) => {
+      const activeHardware = viewPortZone.querySelector('.transformation-stage-card.active .viewport-canvas-hardware');
+      if(!activeHardware) return;
+      
+      const rect = viewPortZone.getBoundingClientRect();
+      const x = e.clientX - rect.left - (rect.width / 2);
+      const y = e.clientY - rect.top - (rect.height / 2);
+      
+      const rotateX = -(y / rect.height) * 8;
+      const rotateY = (x / rect.width) * 8;
+      
+      activeHardware.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.01)`;
+    });
+
+    viewPortZone.addEventListener('mouseleave', () => {
+      const activeHardware = viewPortZone.querySelector('.transformation-stage-card.active .viewport-canvas-hardware');
+      if(activeHardware) {
+        activeHardware.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+      }
+    });
+
+    // function dispatchWhatsAppMessage(event) {
+    //   event.preventDefault();
+    //   const name = document.getElementById('inp-name').value;
+    //   const date = document.getElementById('inp-date').value;
+    //   const format = document.getElementById('inp-format').value;
+    //   const details = document.getElementById('inp-details').value;
+
+    //   const text = `Здравствуйте! Меня зовут ${name}. Хочу забронировать LED-мольберт на дату: ${date}. Формат мероприятия: ${format}. Пожелания: ${details}`;
+    //   const encodedText = encodeURIComponent(text);
+    //   window.open(`https://wa.me/77716222706?text=${encodedText}`, '_blank');
+    // }
+    function dispatchWhatsAppMessage(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('inp-name').value;
+    const date = document.getElementById('inp-date').value;
+    const format = document.getElementById('inp-format').value;
+    const details = document.getElementById('inp-details').value;
+
+    let text = '';
+
+    if (activeLangState === 'kk') {
+      text =
+`Сәлеметсіз бе! Менің атым ${name}. ${date} күніне LED-мольбертке тапсырыс бергім келеді. Іс-шара форматы: ${format}. Қосымша тілектер: ${details}`;
+    } else {
+      text =
+`Здравствуйте! Меня зовут ${name}. Хочу забронировать LED-мольберт на дату: ${date}. Формат мероприятия: ${format}. Пожелания: ${details}`;
+    }
+
+    const encodedText = encodeURIComponent(text);
+
+    window.open(
+      `https://wa.me/77716222706?text=${encodedText}`,
+      '_blank'
+    );
+  }
+  </script>
+
+</body>
+</html>
