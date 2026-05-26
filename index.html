@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SHYMKENT LED — интерактивті LED мольберттер жүйесі</title>
+  <title>SHYMKENT LED — Премиум интерактивті LED мольберттер жүйесі</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <style>
-    /* ── БАЗАЛЫҚ ПАРАМЕТРЛЕР ЖӘНЕ ЖАРҚЫН ТҮСТЕР ПАЛИТРАСЫ ── */
+    /* ── СТИЛИ И ЦВЕТОВАЯ ПАЛИТРА ── */
     *, *::before, *::after {
       margin: 0;
       padding: 0;
@@ -40,71 +40,63 @@
       --transition-fast: all 0.25s ease-out;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       background-color: var(--bg-base);
       color: var(--text-main);
       font-family: var(--font-body);
       overflow-x: hidden;
       position: relative;
-      width: 100%;
     }
 
     body:not(.lang-kk) [lang="kk"] { display: none !important; }
     body.lang-kk [lang="ru"] { display: none !important; }
 
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-base); }
     ::-webkit-scrollbar-thumb { background: var(--accent-cobalt); border-radius: 4px; }
 
-    /* ── КАЗАХСКИЙ ОРНАМЕНТ - ФОНОВЫЙ ДЕКОР ── */
     .ornament-divider {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 40px 20px;
+      padding: 30px 0;
       opacity: 0.8;
       color: var(--accent-luxury-gold);
     }
     .ornament-divider svg {
-      width: 100%;
-      max-width: 120px;
+      width: 120px;
       height: auto;
     }
 
-    /* ── СТИЛЬДІ ЖОҒАРҒЫ ШАПКА (HEADER) ── */
+    /* ── ШАПКА САЙТА (HEADER) ── */
     header.sticky-nav {
       position: fixed;
       top: 0;
-      left: 0;
       width: 100%;
-      height: 90px;
+      height: 95px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 5%;
+      padding: 0 60px;
       border-bottom: 1px solid var(--border-color);
       background: rgba(250, 248, 245, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       z-index: 1000;
     }
     .brand-group {
       display: flex;
       align-items: center;
       text-decoration: none;
-      gap: 14px;
+      gap: 16px;
     }
     
     .logo-container-circle {
       position: relative;
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      padding: 2px;
+      padding: 3px;
       border: 2px solid var(--accent-luxury-gold);
       background: #ffffff;
       overflow: hidden;
@@ -112,7 +104,6 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 15px rgba(18, 33, 61, 0.05);
-      flex-shrink: 0;
     }
     .logo-img-asset {
       width: 100%;
@@ -127,37 +118,36 @@
       font-family: var(--font-display);
     }
     .meta-studio-tag {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       color: var(--accent-coral-gold);
       text-transform: uppercase;
     }
     .meta-edition-tag {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-main);
       letter-spacing: -0.01em;
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
     .action-group {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 24px;
     }
     .lang-switcher {
       display: flex;
       border: 1px solid var(--border-color);
       border-radius: 30px;
-      padding: 3px;
+      padding: 4px;
       background: #ffffff;
-      user-select: none;
-      -webkit-user-select: none;
+      cursor: pointer;
     }
     .lang-item {
-      padding: 6px 14px;
-      font-size: 11px;
+      padding: 6px 18px;
+      font-size: 12px;
       font-weight: 700;
       border-radius: 20px;
       transition: var(--transition-fast);
@@ -171,27 +161,26 @@
       background: var(--text-main);
       color: #ffffff;
       text-decoration: none;
-      padding: 10px 20px;
-      font-size: 12px;
+      padding: 12px 28px;
+      font-size: 14px;
       font-weight: 700;
       border-radius: 30px;
       transition: var(--transition-fast);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      text-align: center;
     }
     .btn-action-cta:hover {
       background: var(--accent-cobalt);
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 82, 255, 0.15);
+      box-shadow: 0 10px 25px rgba(0, 82, 255, 0.2);
     }
 
-    /* ── СОВЕРШЕННО НОВЫЙ ИНФОРМАТИВНЫЙ ХЕРО СЕКЦИЯ (GRID) ── */
+    /* ── ГЛАВНЫЙ ЭКРАН (HERO) ── */
     .hero-container-grid {
-      min-height: 90vh;
+      min-height: 95vh;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      padding: 130px 5% 60px;
+      grid-template-columns: 55% 45%;
+      padding: 140px 60px 60px;
       position: relative;
       z-index: 20;
       gap: 40px;
@@ -203,12 +192,12 @@
       justify-content: center;
     }
     .hero-counter {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--accent-luxury-gold);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       font-family: var(--font-display);
-      letter-spacing: 0.15em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       display: flex;
       align-items: center;
@@ -216,8 +205,8 @@
     }
     .hero-counter::before {
       content: '';
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       background: var(--accent-luxury-gold);
       border-radius: 50%;
       display: inline-block;
@@ -225,12 +214,12 @@
     .hero-title-massive {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: clamp(32px, 4.5vw, 60px);
-      line-height: 1.15;
+      font-size: clamp(32px, 5vw, 64px);
+      line-height: 1.1;
       letter-spacing: -0.02em;
       text-transform: uppercase;
       color: var(--text-main);
-      margin-bottom: 24px;
+      margin-bottom: 30px;
     }
     .hero-title-massive span.hollow-txt {
       color: transparent;
@@ -239,7 +228,7 @@
     
     .hero-explain-badge-strip {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       margin-bottom: 24px;
       flex-wrap: wrap;
     }
@@ -247,137 +236,125 @@
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.03em;
-      padding: 6px 12px;
-      background: rgba(197, 168, 128, 0.12);
+      letter-spacing: 0.05em;
+      padding: 6px 14px;
+      background: rgba(197, 168, 128, 0.15);
       border: 1px solid var(--accent-luxury-gold);
       color: var(--text-main);
       border-radius: 20px;
     }
     .hero-desc-para {
-      font-size: clamp(15px, 1.8vw, 17px);
+      font-size: 17px;
       color: var(--text-muted);
       line-height: 1.6;
-      max-width: 620px;
-      margin-bottom: 36px;
+      max-width: 600px;
+      margin-bottom: 40px;
     }
     .hero-cta-line {
       display: flex;
       align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
+      gap: 20px;
     }
     .hero-cta-line .btn-action-cta {
       background: var(--accent-cobalt);
-      padding: 14px 28px;
-      font-size: 13px;
-    }
-    .hero-cta-line .btn-action-cta:hover {
-      background: var(--text-main);
     }
 
-    /* Правая демонстрационная часть первого экрана */
     .hero-visual-right {
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
-      width: 100%;
     }
     .product-hero-blueprint-container {
       position: relative;
       width: 100%;
-      max-width: 320px;
-      height: 480px;
+      max-width: 340px;
+      height: 500px;
       background: #ffffff;
-      border-radius: 20px;
-      padding: 12px 12px 20px;
-      box-shadow: 0 30px 70px rgba(18, 33, 61, 0.1), 0 0 0 1px rgba(18, 33, 61, 0.02);
+      border-radius: 24px;
+      padding: 14px;
+      box-shadow: 0 40px 90px rgba(18, 33, 61, 0.12), 0 0 0 1px rgba(18, 33, 61, 0.03);
     }
     .floating-info-tag {
       position: absolute;
       background: var(--text-main);
       color: #ffffff;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 10px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 11px;
       font-weight: bold;
       z-index: 30;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
       font-family: var(--font-display);
-      white-space: nowrap;
     }
-    .tag-left-top { top: 30px; left: -20px; background: var(--accent-coral-gold); }
-    .tag-right-bottom { bottom: 40px; right: -20px; background: var(--accent-cobalt); }
+    .tag-left-top { top: 40px; left: -10px; background: var(--accent-coral-gold); }
+    .tag-right-bottom { bottom: 60px; right: -10px; background: var(--accent-cobalt); }
 
-    /* ── ЖҮГІРТПЕ ЖОЛ ── */
+    /* ── БЕГУЩАЯ СТРОКА ── */
     .ticker-tape-wrap {
       background: var(--text-main);
       color: #ffffff;
       overflow: hidden;
       white-space: nowrap;
-      padding: 16px 0;
+      padding: 18px 0;
       font-family: var(--font-display);
       font-weight: 700;
       text-transform: uppercase;
-      font-size: 12px;
-      letter-spacing: 0.1em;
+      font-size: 13px;
+      letter-spacing: 0.12em;
       border-top: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
     }
     .ticker-inner {
       display: inline-block;
-      animation: tickerRun 28s linear infinite;
+      animation: tickerRun 32s linear infinite;
     }
     @keyframes tickerRun {
       0% { transform: translate3d(0, 0, 0); }
       100% { transform: translate3d(-50%, 0, 0); }
     }
 
-    /* ── СЕКЦИЯ КАРТЫ С КАРКАСОМ МОЛЬБЕРТА (U24 STYLE) ── */
+    /* ── СЕКЦИЯ С КАРТОЙ СТАТИСТИКИ ── */
     .u24-map-infrastructure-section {
-      padding: 100px 5%;
+      padding: 120px 60px;
       background: #ffffff;
       border-bottom: 1px solid var(--border-color);
     }
     .map-section-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 50px;
+      grid-template-columns: 55% 45%;
+      gap: 60px;
       align-items: center;
     }
     
     .u24-map-container-wrapper {
       background: #0b111e;
       border: 1px solid var(--border-color);
-      border-radius: 20px;
+      border-radius: 24px;
       padding: 24px;
       position: relative;
-      height: 520px;
+      height: 500px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 20px 40px rgba(18, 33, 61, 0.02);
+      box-shadow: 0 20px 50px rgba(18, 33, 61, 0.03);
     }
     .map-header-telemetry {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       position: relative;
       z-index: 500;
-      margin-bottom: 12px;
-      background: rgba(11, 17, 30, 0.8);
-      padding: 10px 14px;
+      margin-bottom: 15px;
+      background: rgba(11, 17, 30, 0.75);
+      padding: 10px 15px;
       border-radius: 8px;
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      gap: 10px;
     }
     .telemetry-title {
       font-family: var(--font-display);
       text-transform: uppercase;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: 0.05em;
       color: #ffffff;
@@ -387,15 +364,14 @@
       font-size: 11px;
       color: var(--accent-coral-gold);
       font-weight: 700;
-      white-space: nowrap;
     }
 
     .map-live-core-zone-leaflet {
       width: 100%;
-      height: 340px;
-      border-radius: 12px;
+      height: 300px;
+      border-radius: 14px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       z-index: 10;
     }
 
@@ -405,55 +381,49 @@
     .u24-custom-ping::before {
       content: '';
       position: absolute;
-      width: 30px;
-      height: 30px;
-      background: rgba(0, 214, 148, 0.35);
+      width: 36px;
+      height: 36px;
+      background: rgba(0, 214, 148, 0.4);
       border-radius: 50%;
-      top: -15px;
-      left: -15px;
+      top: -18px;
+      left: -18px;
       animation: mapPulse 1.8s infinite ease-in-out;
     }
     .u24-custom-ping::after {
       content: '';
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       background: var(--accent-mint);
       border: 2px solid #ffffff;
       border-radius: 50%;
-      top: -5px;
-      left: -5px;
+      top: -6px;
+      left: -6px;
+      box-shadow: 0 0 10px rgba(0, 214, 148, 0.8);
     }
     @keyframes mapPulse {
-      0% { transform: scale(0.4); opacity: 1; }
-      100% { transform: scale(2.2); opacity: 0; }
+      0% { transform: scale(0.3); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
     }
 
     .map-footer-stats-strip {
       display: flex;
       justify-content: space-between;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 16px;
-      margin-top: 12px;
+      padding-top: 15px;
+      margin-top: 15px;
       position: relative;
       z-index: 500;
-      background: rgba(11, 17, 30, 0.8);
+      background: rgba(11, 17, 30, 0.75);
       padding: 12px;
       border-radius: 8px;
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .stat-micro-node {
-      flex: 1;
-      min-width: 100px;
     }
     .stat-micro-node h5 {
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .stat-micro-node p {
       font-family: var(--font-display);
@@ -468,53 +438,52 @@
     }
     .specs-badge-title {
       font-family: var(--font-display);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 800;
       color: var(--accent-coral-gold);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .specs-main-headline {
       font-family: var(--font-display);
-      font-size: clamp(26px, 3.5vw, 40px);
+      font-size: 38px;
       text-transform: uppercase;
-      line-height: 1.2;
-      letter-spacing: -0.01em;
-      margin-bottom: 24px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 30px;
     }
     .dimensions-blueprint-card {
       background: var(--bg-base);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 24px;
+      border-radius: 16px;
+      padding: 30px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 24px;
     }
     .blueprint-metric-item {
       border-left: 3px solid var(--accent-cobalt);
-      padding-left: 14px;
+      padding-left: 16px;
     }
     .blueprint-metric-item.height-node {
       border-left-color: var(--accent-luxury-gold);
     }
     .metric-value-display {
       font-family: var(--font-display);
-      font-size: clamp(24px, 3vw, 32px);
+      font-size: 32px;
       font-weight: 800;
       line-height: 1;
       color: var(--text-main);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .metric-label-display {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
       font-weight: 600;
-      line-height: 1.4;
     }
 
-    /* ── ИНТЕРФЕЙСТІК ИНТЕРАКТИВТІ ПАНЕЛЬ СЕКЦИЯСЫ ── */
+    /* ── ИНТЕРАКТИВНЫЙ СТЕНД И КОНФИГУРАТОР (МАТРИЦА) ── */
     .transformation-engine-section {
       border-top: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
@@ -524,7 +493,7 @@
     }
     .transformation-matrix {
       display: grid;
-      grid-template-columns: 0.8fr 1.2fr;
+      grid-template-columns: 40% 60%;
       min-height: 700px;
     }
 
@@ -535,7 +504,7 @@
       background: #ffffff;
     }
     .matrix-cell-tab {
-      padding: 30px;
+      padding: 24px 40px;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
@@ -545,16 +514,15 @@
       transition: var(--transition-bezier);
       position: relative;
       text-align: left;
-      gap: 16px;
     }
     .matrix-cell-tab.active {
       background: var(--bg-base);
-      border-left: 5px solid var(--accent-cobalt);
+      border-left: 6px solid var(--accent-cobalt);
     }
     
     .tab-index-glyph {
       font-family: var(--font-display);
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       line-height: 1;
       color: var(--border-color);
@@ -565,18 +533,17 @@
     }
     .tab-meta-details h3 {
       font-family: var(--font-display);
-      font-size: clamp(16px, 2vw, 19px);
+      font-size: 18px;
       text-transform: uppercase;
       letter-spacing: -0.01em;
       margin-bottom: 4px;
       color: var(--text-main);
-      transition: var(--transition-bezier);
     }
     .matrix-cell-tab:hover .tab-meta-details h3, .matrix-cell-tab.active .tab-meta-details h3 {
       color: var(--accent-cobalt);
     }
     .tab-meta-details p {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
     }
 
@@ -598,7 +565,7 @@
       justify-content: space-between;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(15px);
+      transform: translateY(20px);
       transition: all 0.5s ease-out;
     }
     .transformation-stage-card.active {
@@ -610,13 +577,13 @@
     .viewport-canvas-hardware {
       position: relative;
       width: 100%;
-      max-width: 300px;
-      height: 440px;
+      max-width: 280px;
+      height: 420px;
       background: #ffffff;
       margin: 0 auto;
-      border-radius: 14px;
-      padding: 10px 10px 14px;
-      box-shadow: 0 25px 50px rgba(18, 33, 61, 0.06), 0 0 0 1px rgba(18, 33, 61, 0.03);
+      border-radius: 16px;
+      padding: 12px 12px 16px;
+      box-shadow: 0 30px 70px rgba(18, 33, 61, 0.08), 0 0 0 1px rgba(18, 33, 61, 0.05);
       display: flex;
       flex-direction: column;
       transition: transform 0.3s cubic-bezier(0.1, 1, 0.3, 1);
@@ -625,7 +592,7 @@
       width: 100%;
       height: 100%;
       background: #e5dec9;
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
       position: relative;
     }
@@ -636,10 +603,10 @@
     }
     .hardware-stand-element {
       position: absolute;
-      bottom: -12px;
+      bottom: -14px;
       left: 12%;
       width: 76%;
-      height: 12px;
+      height: 14px;
       background: #d8cfb3;
       border-radius: 2px;
       z-index: -1;
@@ -650,21 +617,21 @@
       background: var(--text-main);
       color: #ffffff;
       font-family: var(--font-display);
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 700;
-      padding: 4px 6px;
+      padding: 4px 8px;
       border-radius: 4px;
       z-index: 10;
       letter-spacing: 0.05em;
     }
     .dim-height {
       top: 50%;
-      right: -38px;
+      right: -45px;
       transform: translateY(-50%) rotate(90deg);
       background: var(--accent-luxury-gold);
     }
     .dim-screen {
-      bottom: 20px;
+      bottom: 25px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--accent-cobalt);
@@ -675,28 +642,25 @@
       justify-content: space-between;
       align-items: flex-end;
       border-top: 1px solid var(--border-color);
-      padding-top: 16px;
-      margin-top: 16px;
-      gap: 20px;
+      padding-top: 20px;
+      margin-top: 20px;
     }
     .editorial-headline-text {
       font-family: var(--font-display);
-      font-size: clamp(18px, 2.5vw, 24px);
+      font-size: 22px;
       text-transform: uppercase;
       color: var(--text-main);
-      white-space: nowrap;
     }
     .editorial-sub-text {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-muted);
-      max-width: 380px;
+      max-width: 360px;
       text-align: right;
-      line-height: 1.4;
     }
 
-    /* ── СИПАТТАМА ЖӘНЕ ТЕХНИКАЛЫҚ БЛОК СЕКЦИЯСЫ ── */
+    /* ── СЕКЦИЯ ТЕХНИЧЕСКИХ ПРЕИМУЩЕСТВ ── */
     .chronicle-section {
-      padding: 100px 5%;
+      padding: 120px 60px;
       position: relative;
       z-index: 20;
       background: var(--bg-base);
@@ -705,111 +669,108 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 44px;
+      margin-bottom: 60px;
       border-bottom: 2px solid var(--text-main);
-      padding-bottom: 16px;
-      gap: 16px;
+      padding-bottom: 24px;
     }
     .section-serial-num {
       font-family: var(--font-display);
-      font-size: 12px;
+      font-size: 15px;
       color: var(--accent-coral-gold);
-      letter-spacing: 0.08em;
-      white-space: nowrap;
+      letter-spacing: 0.1em;
     }
     .section-main-heading {
       font-family: var(--font-display);
-      font-size: clamp(24px, 4vw, 44px);
+      font-size: clamp(28px, 5vw, 46px);
       text-transform: uppercase;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
     .chronicle-layout-matrix {
       display: grid;
-      grid-template-columns: 1.2fr 0.9fr 0.9fr;
-      gap: 20px;
+      grid-template-columns: 1.4fr 0.8fr 0.8fr;
+      gap: 24px;
     }
     .chronicle-card-block {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
-      padding: 36px;
-      border-radius: 14px;
+      padding: 40px;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 360px;
+      min-height: 380px;
       transition: var(--transition-bezier);
     }
     .chronicle-card-block:hover {
       border-color: var(--accent-cobalt);
       transform: translateY(-4px);
-      box-shadow: 0 15px 30px rgba(18, 33, 61, 0.04);
+      box-shadow: 0 20px 40px rgba(18, 33, 61, 0.05);
     }
     .chronicle-large-symbol {
       font-family: var(--font-display);
-      font-size: 44px;
+      font-size: 52px;
       font-weight: 800;
       color: var(--accent-cobalt);
-      margin-bottom: 20px;
     }
     .chronicle-card-block:nth-child(2) .chronicle-large-symbol { color: var(--accent-coral-gold); }
     .chronicle-card-block:nth-child(3) .chronicle-large-symbol { color: var(--accent-mint); }
     
     .chronicle-card-title {
       font-family: var(--font-display);
-      font-size: clamp(18px, 2.2vw, 22px);
+      font-size: 22px;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       color: var(--text-main);
     }
     .chronicle-card-text {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-muted);
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
-    /* ── ТАПСЫРЫС БЕРУ ЖӘНЕ КЕРІ БАЙЛАНЫС ФОРМАСЫ ── */
+    /* ── СЕКЦИЯ БРОНИРОВАНИЯ (ФОРМА) ── */
     .booking-system-wrapper {
       background: #ffffff;
       border-top: 1px solid var(--border-color);
-      padding: 100px 5%;
+      padding: 120px 60px;
       position: relative;
       z-index: 20;
     }
     .booking-split-panel {
       display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 60px;
+      grid-template-columns: 45% 55%;
+      gap: 80px;
       align-items: start;
     }
     .booking-meta-editorial h2 {
       font-family: var(--font-display);
-      font-size: clamp(28px, 4.5vw, 48px);
+      font-size: clamp(32px, 6vw, 52px);
       text-transform: uppercase;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      margin-bottom: 32px;
     }
     .contact-card-anchor {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
       background: var(--bg-base);
       border: 1px solid var(--border-color);
-      padding: 20px;
+      padding: 24px;
       border-radius: 12px;
       text-decoration: none;
       color: inherit;
-      margin-top: 32px;
+      margin-top: 40px;
       transition: var(--transition-bezier);
     }
     .contact-card-anchor:hover {
       border-color: var(--accent-cobalt);
       background: #ffffff;
-      box-shadow: 0 12px 24px rgba(0, 82, 255, 0.06);
+      box-shadow: 0 15px 30px rgba(0, 82, 255, 0.08);
     }
     .contact-avatar-icon {
-      width: 44px;
-      height: 44px;
+      width: 52px;
+      height: 52px;
       background: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 50%;
@@ -817,150 +778,108 @@
       align-items: center;
       justify-content: center;
       color: var(--accent-cobalt);
-      flex-shrink: 0;
     }
 
     .form-brutalist-card {
       background: #ffffff;
       border: 1px solid var(--border-color);
-      padding: 44px;
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(18, 33, 61, 0.02);
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 30px 60px rgba(18, 33, 61, 0.04);
     }
     .field-row-wrapper {
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
     .field-row-double {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 24px;
     }
     .brutalist-input-label {
       display: block;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
       color: var(--text-main);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
     .brutalist-input-control {
       width: 100%;
       background: transparent;
       border: none;
       border-bottom: 1px solid var(--border-color);
-      padding: 10px 0;
+      padding: 12px 0;
       font-family: var(--font-body);
-      font-size: 15px;
+      font-size: 16px;
       color: var(--text-main);
       outline: none;
       transition: var(--transition-fast);
-      border-radius: 0;
     }
     .brutalist-input-control:focus {
       border-bottom-color: var(--accent-cobalt);
     }
     select.brutalist-input-control {
       background-color: #ffffff;
+      cursor: pointer;
     }
     .btn-brutalist-submit {
       width: 100%;
       background: var(--accent-cobalt);
       color: #ffffff;
       border: none;
-      padding: 16px;
+      padding: 20px;
       font-family: var(--font-display);
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       text-transform: uppercase;
       cursor: pointer;
       border-radius: 30px;
       transition: var(--transition-bezier);
-      margin-top: 12px;
+      margin-top: 20px;
     }
     .btn-brutalist-submit:hover {
       background: var(--text-main);
-      box-shadow: 0 8px 20px rgba(18, 33, 61, 0.1);
+      box-shadow: 0 10px 25px rgba(18, 33, 61, 0.15);
     }
 
-    /* ── СЕРВИСТІК ТӨМЕНГІ БӨЛІМ (FOOTER) ── */
+    /* ── ПОДВАЛ (FOOTER) ── */
     footer.editorial-footer {
-      padding: 40px 5%;
+      padding: 60px;
       border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
       background: var(--bg-base);
-      gap: 20px;
-      flex-wrap: wrap;
     }
     .footer-links-wrap {
       display: flex;
-      gap: 24px;
+      gap: 40px;
     }
     .footer-links-wrap a {
       color: var(--accent-cobalt);
       text-decoration: none;
       font-weight: bold;
     }
-    .footer-links-wrap a:hover {
-      color: var(--text-main);
-    }
 
-    /* ── БЕЙІМДЕЛГЕН МОБИЛЬДІ НҰСҚА ЖӘНЕ ПЛАНШЕТТЕР ── */
+    /* ── АДАПТИВНОСТЬ ДЛЯ СМАРТФОНОВ (RESPONSIVE) ── */
     @media (max-width: 1024px) {
-      header.sticky-nav { height: 80px; }
-      .hero-container-grid { grid-template-columns: 1fr; padding-top: 120px; gap: 50px; }
+      header.sticky-nav { padding: 0 20px; height: 85px; }
+      .hero-container-grid { grid-template-columns: 1fr; padding: 140px 20px 60px; gap: 60px; }
       .hero-visual-right { order: -1; } 
       .map-section-grid { grid-template-columns: 1fr; gap: 40px; }
-      .u24-map-container-wrapper { height: 460px; }
-      .map-live-core-zone-leaflet { height: 280px; }
+      .u24-map-container-wrapper { height: 460px; padding: 15px; }
+      .map-live-core-zone-leaflet { height: 260px; }
       .transformation-matrix { grid-template-columns: 1fr; }
       .matrix-sidebar-controls { border-right: none; }
-      .matrix-view-viewport { min-height: 520px; padding: 24px; }
-      .transformation-stage-card { inset: 24px; }
-      .chronicle-layout-matrix { grid-template-columns: 1fr; gap: 16px; }
-      .chronicle-card-block { min-height: auto; }
-      .booking-split-panel { grid-template-columns: 1fr; gap: 48px; }
-    }
-
-    @media (max-width: 600px) {
-      header.sticky-nav { height: 75px; padding: 0 4%; }
-      .brand-group { gap: 10px; }
-      .logo-container-circle { width: 42px; height: 42px; }
-      .meta-edition-tag { font-size: 11px; }
-      .btn-action-cta { padding: 8px 14px; font-size: 11px; }
-      .lang-item { padding: 5px 10px; font-size: 10px; }
-      
-      .hero-container-grid { padding: 105px 4% 40px; gap: 32px; }
-      .hero-title-massive { margin-bottom: 16px; }
-      .hero-desc-para { margin-bottom: 24px; }
-      
-      .product-hero-blueprint-container { max-width: 270px; height: 400px; }
-      .tag-left-top { left: -10px; top: 20px; }
-      .tag-right-bottom { right: -10px; bottom: 30px; }
-      .dim-height { right: -34px; }
-      
-      .u24-map-infrastructure-section, .chronicle-section, .booking-system-wrapper { padding: 60px 4%; }
-      .u24-map-container-wrapper { padding: 16px; height: 420px; }
-      .map-live-core-zone-leaflet { height: 250px; }
-      .map-footer-stats-strip { padding: 10px; }
-      
-      .dimensions-blueprint-card { grid-template-columns: 1fr; padding: 16px; gap: 16px; }
-      .matrix-cell-tab { padding: 20px 16px; }
-      .matrix-view-viewport { padding: 16px; min-height: 480px; }
-      .transformation-stage-card { inset: 16px; }
-      .viewport-canvas-hardware { max-width: 240px; height: 350px; }
-      .dim-height { right: -34px; }
-      .transformed-editorial-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
-      .editorial-sub-text { text-align: left; }
-      
-      .form-brutalist-card { padding: 24px; }
-      .field-row-double { grid-template-columns: 1fr; gap: 24px; }
-      
-      footer.editorial-footer { flex-direction: column; text-align: center; padding: 30px 4%; }
+      .matrix-view-viewport { min-height: 480px; padding: 20px; }
+      .transformation-stage-card { inset: 20px; }
+      .chronicle-layout-matrix { grid-template-columns: 1fr; gap: 20px; }
+      .booking-split-panel { grid-template-columns: 1fr; gap: 60px; }
+      .chronicle-section, .booking-system-wrapper, .u24-map-infrastructure-section { padding: 80px 20px; }
+      .form-brutalist-card { padding: 30px 20px; }
     }
   </style>
 </head>
@@ -969,12 +888,12 @@
   <header class="sticky-nav">
     <a href="#" class="brand-group">
       <div class="logo-container-circle">
-        <img src="files/logo.png" alt="SHYMKENT LED Official Logo" class="logo-img-asset">
+        <img src="https://res.cloudinary.com/djpb9678r/image/upload/v1716730000/logo_premium.jpg" alt="SHYMKENT LED Official Logo" class="logo-img-asset" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80'">
       </div>
       <div class="topbar-pagination-details">
         <span class="meta-studio-tag">LED MALBERT SCREENS</span>
         <span class="meta-edition-tag">
-          <span lang="ru">тренды 2026</span>
+          <span lang="ru">Премиум тренды 2026</span>
           <span lang="kk">2026 тойдың сәндері</span>
         </span>
       </div>
@@ -996,12 +915,12 @@
       <div class="hero-content-left">
         <span class="hero-counter">
           <span lang="ru">Премиум система дисплеев 2026</span>
-          <span lang="kk">Той дисплейлер жүйесі 2026</span>
+          <span lang="kk">Премиум дисплейлер жүйесі 2026</span>
         </span>
         
         <h1 class="hero-title-massive">
           <span lang="ru">Трансформация<br><span class="hollow-txt">воспоминаний</span><br>на ваших ивентах</span>
-          <span lang="kk">Сіздің кешіңіздегі<br><span class="hollow-txt">естеліктер</span><br>трансформациясы</span>
+          <span lang="kk">Сіздің кешіңіздегі<br><span class="hollow-txt">тұсаукесер</span><br>трансформациясы</span>
         </h1>
 
         <div class="hero-explain-badge-strip">
@@ -1030,8 +949,7 @@
           <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
           <div class="hardware-dimension-tag dim-screen">Экран: 95×60 cm</div>
           <div class="hardware-screen-core">
-            <video src="files/main.mp4" alt="Премиальный интерактивный LED мольберт SHYMKENT LED" controls>
-            </video>
+            <video src="https://player.vimeo.com/external/435674703.sd.mp4?s=7fdf7fdf8e64c399b0c2a79277c07da1952e42ef&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
           </div>
           <div class="hardware-stand-element"></div>
         </div>
@@ -1055,7 +973,6 @@
       <div class="map-section-grid">
         
         <div class="u24-map-container-wrapper">
-          
           <div class="map-header-telemetry">
             <span class="telemetry-title"><span lang="ru">Интерактивный радар Шымкент</span><span lang="kk">Шымкент интерактивті радары</span></span>
             <span class="telemetry-gps">42.3249° N, 69.5872° E</span>
@@ -1082,7 +999,7 @@
         <div class="malbert-specs-editorial-box">
           <span class="specs-badge-title">[ HARDWARE DIMENSIONS ]</span>
           <h2 class="specs-main-headline">
-            <span lang="ru">Инженерное совершенство конструкции</span>
+            <span lang="ru">Инженерное совершенство</span>
             <span lang="kk">Конструкцияның инженерлік мінсіздігі</span>
           </h2>
           
@@ -1097,7 +1014,7 @@
             <div class="blueprint-metric-item">
               <div class="metric-value-display">95×60 cm</div>
               <div class="metric-label-display">
-                <span lang="ru">Полезный размер LED экрана</span>
+                <span lang="ru">Размер LED экрана</span>
                 <span lang="kk">LED экранның нақты өлшемі</span>
               </div>
             </div>
@@ -1111,12 +1028,11 @@
       <div class="transformation-matrix">
         
         <div class="matrix-sidebar-controls">
-          
           <div class="matrix-cell-tab active" onclick="triggerTransformationState(0)">
             <span class="tab-index-glyph">01</span>
             <div class="tab-meta-details">
               <h3><span lang="ru">Свадебный День</span><span lang="kk">Үйлену Той</span></h3>
-              <p><span lang="ru">Профиль 01 — Свадебная media-система</span><span lang="kk">Профиль 01 — Үйлену той медиа жүйесі</span></p>
+              <p><span lang="ru">Профиль 01 — Свадебная медиа-система</span><span lang="kk">Профиль 01 — Үйлену той медиа жүйесі</span></p>
             </div>
           </div>
 
@@ -1124,7 +1040,7 @@
             <span class="tab-index-glyph">02</span>
             <div class="tab-meta-details">
               <h3><span lang="ru">Қыз Ұзату</span><span lang="kk">Қыз Ұзату</span></h3>
-              <p><span lang="ru">Профиль 02 — Традиционные ритуалы</span><span lang="kk">Профиль 02 — Дәстүрлі ұзату медиасы</span></p>
+              <p><span lang="ru">Профиль 02 — Традиционный стиль</span><span lang="kk">Профиль 02 — Дәстүрлі ұзату медиасы</span></p>
             </div>
           </div>
 
@@ -1151,7 +1067,6 @@
               <p><span lang="ru">Профиль 05 — Чистый белый корпус</span><span lang="kk">Профиль 05 — Таза ақ дизайн үлгісі</span></p>
             </div>
           </div>
-
         </div>
 
         <div class="matrix-view-viewport" id="viewport-interactive-zone">
@@ -1160,9 +1075,8 @@
             <div class="viewport-canvas-hardware">
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">Экран: 95×60 cm</div>
-              
               <div class="hardware-screen-core">
-                <video src="files/wedding.mov" autoplay loop muted playsinline></video>
+                <video src="https://player.vimeo.com/external/459389137.sd.mp4?s=9ca6312d45b73646cf0d6d5a109a9307df9702cc&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1180,14 +1094,14 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="files/kyzuzatu.mov" autoplay loop muted playsinline></video>
+                <video src="https://player.vimeo.com/external/394172422.sd.mp4?s=d744ecdf981ec25d3fa84c042cb3a693cb8376cb&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
             <div class="transformed-editorial-footer">
               <span class="editorial-headline-text">Ұзату: Жания</span>
               <p class="editorial-sub-text">
-                <span lang="ru">Портреты в national стиле на ярких экранах передают глубокую аутентичную эстетику образа.</span>
+                <span lang="ru">Портреты в национальном стиле на ярких экранах передают глубокую аутентичную эстетику образа.</span>
                 <span lang="kk">Жарқын экрандардағы ұлттық нақыштағы портреттер образдың терең ұлттық эстетикасын жеткізеді.</span>
               </p>
             </div>
@@ -1198,7 +1112,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="files/tusau.mov" autoplay loop muted playsinline></video>
+                <video src="https://player.vimeo.com/external/484917154.sd.mp4?s=6a4574a49c6fc216b47ff01ba16198be90356778&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1216,7 +1130,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="files/wedding2.mov" autoplay loop muted playsinline></video>
+                <video src="https://player.vimeo.com/external/370331493.sd.mp4?s=98d9cb66a988d8b94156bf9a7d9fbbf934b92b67&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1234,7 +1148,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <img src="files/sample1.jpeg" alt="Премиум Корпус">
+                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80" alt="Премиум Белоснежный Корпус Мольберта">
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1248,7 +1162,6 @@
           </div>
 
         </div>
-
       </div>
     </section>
 
@@ -1261,12 +1174,11 @@
 
     <section class="chronicle-section">
       <div class="section-eyebrow-container">
-        <h2 class="section-main-heading"><span lang="ru">Технологический Стак</span><span lang="kk">Технологиялық Стек</span></h2>
+        <h2 class="section-main-heading"><span lang="ru">Технологический Стек</span><span lang="kk">Технологиялық Стек</span></h2>
         <span class="section-serial-num">[ ТЕХНОЛОГИЯЛАР ЖҮЙЕСІ ]</span>
       </div>
 
       <div class="chronicle-layout-matrix">
-        
         <div class="chronicle-card-block">
           <span class="chronicle-large-symbol">⚡</span>
           <div>
@@ -1295,11 +1207,10 @@
             <h3 class="chronicle-card-title"><span lang="ru">Дизайн Сервис</span><span lang="kk">Толық Дизайн Қызметі</span></h3>
             <p class="chronicle-card-text">
               <span lang="ru">Мы полностью берем на себя адаптацию, верстку, калибровку и профессиональный запуск медиафайлов под точные пропорции LED-полотен.</span>
-              <span lang="kk">Біз медиа файлдарды LED кенептеріміздің пропорцияларына sәykes бейімдеуді, калибрлеуді және кәсіби қосуды толықтай өз мойнымызға аламыз.</span>
+              <span lang="kk">Біз медиа файлдарды LED кенептеріміздің пропорцияларына сәйкес бейімдеуді, калибрлеуді және кәсіби қосуды толықтай өз мойнымызға аламыз.</span>
             </p>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -1309,8 +1220,8 @@
         <div class="booking-meta-editorial">
           <h2><span lang="ru">Оставьте след в истории вашего праздника.</span><span lang="kk">Мерекеңіздің тарихында із қалдырыңыз.</span></h2>
           <p class="chronicle-card-text">
-            <span lang="ru">Заполните интерактивную форму. Мы мгновенно рассчитаем доступность оборудования на выбранную дату в Шымкенте.</span>
-            <span lang="kk">Интерактивті форманы толтырыңыз. Біз Шымкенттегі таңдалған күнге жабдықтың қолжетімділігін жылдам есептейміз.</span>
+            <span lang="ru">Заполните интерактивную форму. Мы мгновенно рассчитаем смету и доступность оборудования на выбранную дату в Шымкенте.</span>
+            <span lang="kk">Интерактивті форманы толтырыңыз. Біз Шымкенттегі таңдалған күнге жабдықтың қолжетімділігі мен сметасын жылдам есептейміз.</span>
           </p>
 
           <a href="https://wa.me/77716222706" class="contact-card-anchor" target="_blank">
@@ -1318,15 +1229,14 @@
               <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.89 9.886-.001 2.225.618 3.891 1.651 5.6l-.993 3.634 3.732-.979zm11.087-7.443c-.315-.158-1.86-.918-2.142-1.021-.283-.103-.488-.158-.693.158-.205.315-.79 1.021-.969 1.226-.179.205-.359.231-.674.074-.315-.158-1.33-.49-2.532-1.562-.936-.836-1.568-1.869-1.751-2.184-.184-.315-.02-.485.137-.642.142-.141.315-.368.473-.552.158-.184.21-.315.315-.526.105-.21.053-.394-.026-.552-.079-.158-.693-1.671-.949-2.289-.249-.602-.503-.519-.693-.529l-.591-.009c-.205 0-.538.077-.82.384-.282.308-1.077 1.053-1.077 2.564 0 1.511 1.097 2.972 1.25 3.181.153.21 2.154 3.29 5.218 4.612.729.314 1.299.502 1.743.643.732.233 1.398.2 1.925.122.587-.087 1.86-.761 2.122-1.458.262-.696.262-1.294.184-1.42-.079-.126-.282-.205-.597-.364z"/></svg>
             </div>
             <div>
-              <h4 style="font-size: 12px; font-weight: 700; text-transform: uppercase;"><span lang="ru">Чат в WhatsApp</span><span lang="kk">WhatsApp Чат</span></h4>
-              <p style="font-size: 15px; margin-top: 2px; color: var(--accent-cobalt); font-weight: bold;">8 (771) 622-27-06</p>
+              <h4 style="font-size: 13px; font-weight: 700; text-transform: uppercase;"><span lang="ru">Чат в WhatsApp</span><span lang="kk">WhatsApp Чат</span></h4>
+              <p style="font-size: 16px; margin-top: 2px; color: var(--accent-cobalt); font-weight: bold;">8 (771) 622-27-06</p>
             </div>
           </a>
         </div>
 
         <div class="form-brutalist-card">
           <form onsubmit="dispatchWhatsAppMessage(event)">
-            
             <div class="field-row-wrapper">
               <label class="brutalist-input-label"><span lang="ru">Имя заказчика</span><span lang="kk">Тапсырыс берушінің аты</span></label>
               <input type="text" id="inp-name" class="brutalist-input-control" required placeholder="..." style="color: var(--text-main);">
@@ -1354,9 +1264,8 @@
             </div>
 
             <button type="submit" class="btn-brutalist-submit">
-              <span lang="ru">Узнать цену</span><span lang="kk">Бағасын білу үшін</span>
+              <span lang="ru">Отправить через WhatsApp</span><span lang="kk">WhatsApp арқылы жіберу</span>
             </button>
-
           </form>
         </div>
 
@@ -1368,16 +1277,14 @@
   <footer class="editorial-footer">
     <p>&copy; 2026 SHYMKENT LED. <span lang="ru">Все права защищены.</span><span lang="kk">Барлық құқықтар қорғалған.</span></p>
     <div class="footer-links-wrap">
-      <a href="https://wa.me/77716222706" target="_blank">WhatsApp </a>
-      <a href="https://www.instagram.com/ledmolbert.shym/" target="_blank">Instagram</a>
-
+      <a href="https://wa.me/77716222706" target="_blank">WhatsApp байланыс</a>
     </div>
-    
   </footer>
 
   <script>
     let activeLangState = 'ru';
 
+    // ПЕРЕКЛЮЧЕНИЕ ЯЗЫКОВЫХ СЛОЕВ
     function switchSystemLanguage() {
       activeLangState = activeLangState === 'ru' ? 'kk' : 'ru';
       document.body.className = activeLangState === 'kk' ? 'lang-kk' : '';
@@ -1386,6 +1293,7 @@
       document.getElementById('lng-kk').classList.toggle('active', activeLangState === 'kk');
     }
 
+    // ИНИЦИАЛИЗАЦИЯ ИНТЕРАКТИВНОЙ КАРТЫ С ТЕМНЫМ ПОДЛОЖКОЙ
     document.addEventListener("DOMContentLoaded", function() {
       const shymkentCoords = [42.3249, 69.5872];
       
@@ -1407,9 +1315,9 @@
       });
 
       const locations = [
-        { coords: [42.3210, 69.5960], popup: "<b>Аль-Фараби ауданы</b><br>Активное покрытие" },
-        { coords: [42.3650, 69.6210], popup: "<b>Нурсат Сити</b><br>Медиа-мониторинг" },
-        { coords: [42.3420, 69.5890], popup: "<b>Проспект Кунаева</b><br>Центральный склад" }
+        { coords: [42.3210, 69.5960], popup: "<b>Аль-Фараби ауданы</b>" },
+        { coords: [42.3650, 69.6210], popup: "<b>Нурсат Сити</b>" },
+        { coords: [42.3420, 69.5890], popup: "<b>Проспект Кунаева</b>" }
       ];
 
       locations.forEach(loc => {
@@ -1417,6 +1325,7 @@
       });
     });
 
+    // ПЕРЕКЛЮЧЕНИЕ ПРОФИЛЕЙ В КОНФИГУРАТОРЕ
     function triggerTransformationState(index) {
       const tabs = document.querySelectorAll('.matrix-cell-tab');
       const cards = document.querySelectorAll('.transformation-stage-card');
@@ -1432,6 +1341,7 @@
       });
     }
 
+    // ИНТЕРАКТИВНЫЙ 3D-ЭФФЕКТ НА ГЛАВНОМ ЭКРАНЕ
     const heroTriggerZone = document.getElementById('hero-interactive-trigger-zone');
     const heroCanvas = document.getElementById('hero-hardware-canvas');
     if(heroTriggerZone && heroCanvas) {
@@ -1450,6 +1360,7 @@
       });
     }
 
+    // ИНТЕРАКТИВНЫЙ 3D-ЭФФЕКТ ДЛЯ МОЛЬБЕРТОВ В КОНФИГУРАТОРЕ
     const viewPortZone = document.getElementById('viewport-interactive-zone');
     viewPortZone.addEventListener('mousemove', (e) => {
       const activeHardware = viewPortZone.querySelector('.transformation-stage-card.active .viewport-canvas-hardware');
@@ -1472,42 +1383,29 @@
       }
     });
 
-    // function dispatchWhatsAppMessage(event) {
-    //   event.preventDefault();
-    //   const name = document.getElementById('inp-name').value;
-    //   const date = document.getElementById('inp-date').value;
-    //   const format = document.getElementById('inp-format').value;
-    //   const details = document.getElementById('inp-details').value;
-
-    //   const text = `Здравствуйте! Меня зовут ${name}. Хочу забронировать LED-мольберт на дату: ${date}. Формат мероприятия: ${format}. Пожелания: ${details}`;
-    //   const encodedText = encodeURIComponent(text);
-    //   window.open(`https://wa.me/77716222706?text=${encodedText}`, '_blank');
-    // }
+    // ДВУХЪЯЗЫЧНАЯ ОТПРАВКА ЗАЯВКИ В WHATSAPP
     function dispatchWhatsAppMessage(event) {
-    event.preventDefault();
+      event.preventDefault();
+      const name = document.getElementById('inp-name').value;
+      const date = document.getElementById('inp-date').value;
+      const format = document.getElementById('inp-format').value;
+      const details = document.getElementById('inp-details').value || '...';
 
-    const name = document.getElementById('inp-name').value;
-    const date = document.getElementById('inp-date').value;
-    const format = document.getElementById('inp-format').value;
-    const details = document.getElementById('inp-details').value;
+      let text = '';
 
-    let text = '';
+      if (activeLangState === 'kk') {
+        text = `Сәлеметсіз бе! Менің атым ${name}. ${date} күніне LED-мольбертті брондау туралы білгім келеді.\n\n` +
+               `• Іс-шара форматы: ${format}\n` +
+               `• Қосымша мәліметтер: ${details}`;
+      } else {
+        text = `Здравствуйте! Меня зовут ${name}. Хочу забронировать LED-мольберт на дату: ${date}.\n\n` +
+               `• Format мероприятия: ${format}\n` +
+               `• Пожелания/Детали: ${details}`;
+      }
 
-    if (activeLangState === 'kk') {
-      text =
-`Сәлеметсіз бе! Менің атым ${name}. ${date} күніне LED-мольбертке тапсырыс бергім келеді. Іс-шара форматы: ${format}. Қосымша тілектер: ${details}`;
-    } else {
-      text =
-`Здравствуйте! Меня зовут ${name}. Хочу забронировать LED-мольберт на дату: ${date}. Формат мероприятия: ${format}. Пожелания: ${details}`;
+      const encodedText = encodeURIComponent(text);
+      window.open(`https://wa.me/77716222706?text=${encodedText}`, '_blank');
     }
-
-    const encodedText = encodeURIComponent(text);
-
-    window.open(
-      `https://wa.me/77716222706?text=${encodedText}`,
-      '_blank'
-    );}
   </script>
-
 </body>
 </html>
