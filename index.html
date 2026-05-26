@@ -13,7 +13,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <style>
-    /* ── СТИЛИ И ЦВЕТОВАЯ ПАЛИТРА ── */
+    /* ── БАЗОВЫЕ НАСТРОЙКИ И ПАЛИТРА ── */
     *, *::before, *::after {
       margin: 0;
       padding: 0;
@@ -48,6 +48,7 @@
       position: relative;
     }
 
+    /* Мультиязычность через CSS классы */
     body:not(.lang-kk) [lang="kk"] { display: none !important; }
     body.lang-kk [lang="ru"] { display: none !important; }
 
@@ -90,7 +91,6 @@
       text-decoration: none;
       gap: 16px;
     }
-    
     .logo-container-circle {
       position: relative;
       width: 60px;
@@ -111,7 +111,6 @@
       object-fit: cover;
       border-radius: 50%;
     }
-
     .topbar-pagination-details {
       display: flex;
       flex-direction: column;
@@ -131,7 +130,6 @@
       letter-spacing: -0.01em;
       margin-top: 2px;
     }
-
     .action-group {
       display: flex;
       align-items: center;
@@ -209,7 +207,6 @@
       height: 8px;
       background: var(--accent-luxury-gold);
       border-radius: 50%;
-      display: inline-block;
     }
     .hero-title-massive {
       font-family: var(--font-display);
@@ -225,7 +222,6 @@
       color: transparent;
       -webkit-text-stroke: 1.5px var(--accent-cobalt);
     }
-    
     .hero-explain-badge-strip {
       display: flex;
       gap: 12px;
@@ -258,7 +254,6 @@
     .hero-cta-line .btn-action-cta {
       background: var(--accent-cobalt);
     }
-
     .hero-visual-right {
       display: flex;
       justify-content: center;
@@ -314,7 +309,7 @@
       100% { transform: translate3d(-50%, 0, 0); }
     }
 
-    /* ── СЕКЦИЯ С КАРТОЙ СТАТИСТИКИ ── */
+    /* ── СЕКЦИЯ С КАРТОЙ И СТАТИСТИКОЙ ── */
     .u24-map-infrastructure-section {
       padding: 120px 60px;
       background: #ffffff;
@@ -326,7 +321,6 @@
       gap: 60px;
       align-items: center;
     }
-    
     .u24-map-container-wrapper {
       background: #0b111e;
       border: 1px solid var(--border-color);
@@ -365,7 +359,6 @@
       color: var(--accent-coral-gold);
       font-weight: 700;
     }
-
     .map-live-core-zone-leaflet {
       width: 100%;
       height: 300px;
@@ -374,7 +367,6 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       z-index: 10;
     }
-
     .u24-custom-ping {
       position: relative;
     }
@@ -405,7 +397,6 @@
       0% { transform: scale(0.3); opacity: 1; }
       100% { transform: scale(2.5); opacity: 0; }
     }
-
     .map-footer-stats-strip {
       display: flex;
       justify-content: space-between;
@@ -483,7 +474,7 @@
       font-weight: 600;
     }
 
-    /* ── ИНТЕРАКТИВНЫЙ СТЕНД И КОНФИГУРАТОР (МАТРИЦА) ── */
+    /* ── МАТРИЦА ТРАНСФОРМАЦИИ (ИНТЕРАКТИВНЫЙ СТЕНД) ── */
     .transformation-engine-section {
       border-top: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
@@ -496,7 +487,6 @@
       grid-template-columns: 40% 60%;
       min-height: 700px;
     }
-
     .matrix-sidebar-controls {
       border-right: 1px solid var(--border-color);
       display: flex;
@@ -519,7 +509,6 @@
       background: var(--bg-base);
       border-left: 6px solid var(--accent-cobalt);
     }
-    
     .tab-index-glyph {
       font-family: var(--font-display);
       font-size: 30px;
@@ -546,7 +535,6 @@
       font-size: 13px;
       color: var(--text-muted);
     }
-
     .matrix-view-viewport {
       background: var(--bg-viewport);
       position: relative;
@@ -573,7 +561,6 @@
       pointer-events: auto;
       transform: translateY(0);
     }
-
     .viewport-canvas-hardware {
       position: relative;
       width: 100%;
@@ -611,7 +598,6 @@
       border-radius: 2px;
       z-index: -1;
     }
-
     .hardware-dimension-tag {
       position: absolute;
       background: var(--text-main);
@@ -636,7 +622,6 @@
       transform: translateX(-50%);
       background: var(--accent-cobalt);
     }
-
     .transformed-editorial-footer {
       display: flex;
       justify-content: space-between;
@@ -658,7 +643,7 @@
       text-align: right;
     }
 
-    /* ── СЕКЦИЯ ТЕХНИЧЕСКИХ ПРЕИМУЩЕСТВ ── */
+    /* ── ХАРАКТЕРИСТИКИ СТЕКА ── */
     .chronicle-section {
       padding: 120px 60px;
       position: relative;
@@ -714,7 +699,6 @@
     }
     .chronicle-card-block:nth-child(2) .chronicle-large-symbol { color: var(--accent-coral-gold); }
     .chronicle-card-block:nth-child(3) .chronicle-large-symbol { color: var(--accent-mint); }
-    
     .chronicle-card-title {
       font-family: var(--font-display);
       font-size: 22px;
@@ -728,7 +712,7 @@
       line-height: 1.6;
     }
 
-    /* ── СЕКЦИЯ БРОНИРОВАНИЯ (ФОРМА) ── */
+    /* ── СЕКЦИЯ БРОНИРОВАНИЯ И ФОРМА ── */
     .booking-system-wrapper {
       background: #ffffff;
       border-top: 1px solid var(--border-color);
@@ -779,7 +763,6 @@
       justify-content: center;
       color: var(--accent-cobalt);
     }
-
     .form-brutalist-card {
       background: #ffffff;
       border: 1px solid var(--border-color);
@@ -864,7 +847,7 @@
       font-weight: bold;
     }
 
-    /* ── АДАПТИВНОСТЬ ДЛЯ СМАРТФОНОВ (RESPONSIVE) ── */
+    /* ── АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА ── */
     @media (max-width: 1024px) {
       header.sticky-nav { padding: 0 20px; height: 85px; }
       .hero-container-grid { grid-template-columns: 1fr; padding: 140px 20px 60px; gap: 60px; }
@@ -888,7 +871,7 @@
   <header class="sticky-nav">
     <a href="#" class="brand-group">
       <div class="logo-container-circle">
-        <img src="https://res.cloudinary.com/djpb9678r/image/upload/v1716730000/logo_premium.jpg" alt="SHYMKENT LED Official Logo" class="logo-img-asset" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80'">
+        <img src="logo.jpg" alt="SHYMKENT LED Official Logo" class="logo-img-asset" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&q=80'">
       </div>
       <div class="topbar-pagination-details">
         <span class="meta-studio-tag">LED MALBERT SCREENS</span>
@@ -949,7 +932,7 @@
           <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
           <div class="hardware-dimension-tag dim-screen">Экран: 95×60 cm</div>
           <div class="hardware-screen-core">
-            <video src="https://player.vimeo.com/external/435674703.sd.mp4?s=7fdf7fdf8e64c399b0c2a79277c07da1952e42ef&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
+            <video src="main.mp4" autoplay loop muted playsinline></video>
           </div>
           <div class="hardware-stand-element"></div>
         </div>
@@ -1076,7 +1059,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">Экран: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="https://player.vimeo.com/external/459389137.sd.mp4?s=9ca6312d45b73646cf0d6d5a109a9307df9702cc&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
+                <img src="sample1.jpeg" alt="Свадебный Медиа Профиль">
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1094,7 +1077,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="https://player.vimeo.com/external/394172422.sd.mp4?s=d744ecdf981ec25d3fa84c042cb3a693cb8376cb&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
+                <video src="sample2.mp4" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1112,7 +1095,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="https://player.vimeo.com/external/484917154.sd.mp4?s=6a4574a49c6fc216b47ff01ba16198be90356778&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
+                <video src="sample3.mp4" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1130,7 +1113,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <video src="https://player.vimeo.com/external/370331493.sd.mp4?s=98d9cb66a988d8b94156bf9a7d9fbbf934b92b67&profile_id=165&oauth2_token_id=57447761" autoplay loop muted playsinline></video>
+                <video src="sample4.mp4" autoplay loop muted playsinline></video>
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1148,7 +1131,7 @@
               <div class="hardware-dimension-tag dim-height">H: 180 cm</div>
               <div class="hardware-dimension-tag dim-screen">SCREEN: 95×60 cm</div>
               <div class="hardware-screen-core">
-                <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80" alt="Премиум Белоснежный Корпус Мольберта">
+                <img src="sample5.jpg" alt="Премиум Белоснежный Корпус Мольберта">
               </div>
               <div class="hardware-stand-element"></div>
             </div>
@@ -1284,7 +1267,7 @@
   <script>
     let activeLangState = 'ru';
 
-    // ПЕРЕКЛЮЧЕНИЕ ЯЗЫКОВЫХ СЛОЕВ
+    // УПРАВЛЕНИЕ СИСТЕМНЫМ ЯЗЫКОМ ИНТЕРФЕЙСА
     function switchSystemLanguage() {
       activeLangState = activeLangState === 'ru' ? 'kk' : 'ru';
       document.body.className = activeLangState === 'kk' ? 'lang-kk' : '';
@@ -1293,7 +1276,7 @@
       document.getElementById('lng-kk').classList.toggle('active', activeLangState === 'kk');
     }
 
-    // ИНИЦИАЛИЗАЦИЯ ИНТЕРАКТИВНОЙ КАРТЫ С ТЕМНЫМ ПОДЛОЖКОЙ
+    // ИНИЦИАЛИЗАЦИЯ ИНТЕРАКТИВНОЙ КАРТЫ ШЫМКЕНТА
     document.addEventListener("DOMContentLoaded", function() {
       const shymkentCoords = [42.3249, 69.5872];
       
@@ -1325,7 +1308,7 @@
       });
     });
 
-    // ПЕРЕКЛЮЧЕНИЕ ПРОФИЛЕЙ В КОНФИГУРАТОРЕ
+    // УПРАВЛЕНИЕ ПРОФИЛЯМИ В КОНФИГУРАТОРЕ
     function triggerTransformationState(index) {
       const tabs = document.querySelectorAll('.matrix-cell-tab');
       const cards = document.querySelectorAll('.transformation-stage-card');
@@ -1383,7 +1366,7 @@
       }
     });
 
-    // ДВУХЪЯЗЫЧНАЯ ОТПРАВКА ЗАЯВКИ В WHATSAPP
+    // ДВУХЪЯЗЫЧНАЯ ОТПРАВКА ЗАЯВКИ В WHATSAPP БЕЗ СИНТАКСИЧЕСКИХ ОШИБОК
     function dispatchWhatsAppMessage(event) {
       event.preventDefault();
       const name = document.getElementById('inp-name').value;
@@ -1399,7 +1382,7 @@
                `• Қосымша мәліметтер: ${details}`;
       } else {
         text = `Здравствуйте! Меня зовут ${name}. Хочу забронировать LED-мольберт на дату: ${date}.\n\n` +
-               `• Format мероприятия: ${format}\n` +
+               `• Формат мероприятия: ${format}\n` +
                `• Пожелания/Детали: ${details}`;
       }
 
